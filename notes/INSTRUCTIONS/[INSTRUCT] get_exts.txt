@@ -1,0 +1,10 @@
+ls ~/.vscode-server/extensions/ | sed -E 's/-[0-9]+\..*/ /' | awk '{print $1}' | sort | uniq > vscode-extensions-uniq.txt
+
+cat vscode-extensions-uniq.txt | xargs -L 1 code --install-extension
+
+
+cd /workspace/AAA_project/vsix_extensions && \
+for ext in *.vsix; do \
+  echo "Установка $ext..." && \
+  code --install-extension "$ext" --force; \
+done

@@ -1,0 +1,36 @@
+# Минимальный requirements.txt для AAAproj
+
+# --- Основные для baseline_lora_vit_rugpt2.py ---
+pandas
+numpy
+torch
+scikit-learn
+transformers
+huggingface-hub
+peft
+Pillow
+tqdm
+nltk
+rouge-score
+
+# --- Для very_first_app (FastAPI веб-интерфейс) ---
+fastapi
+uvicorn
+jinja2
+requests
+python-multipart
+
+# --- Для EDA (notebook) ---
+matplotlib
+seaborn
+wordcloud
+natasha
+
+# --- Для скачивания данных ---
+gdown
+pyarrow
+fastparquet
+urllib3
+
+# --- Jupyter (для запуска .ipynb) ---
+jupyter

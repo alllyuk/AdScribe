@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>AdScribe — генератор описаний для Авито</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="app-panel">
+            <div class="text-center mb-4">
+                <span class="logo-heavy shine-outline">AdScribe</span>
+                <div class="lead mt-2 avito-desc-service">генерация описаний объявлений</div>
+            </div>
+            <form id="genForm" enctype="multipart/form-data" autocomplete="off">
+                <div class="panel-dark">
+                    <div class="main-photo-box" id="mainPhotoBox">
+                        <img id="mainPhoto" src="" alt="Главное фото" style="display:none;">
+                    </div>
+                    <div class="file-list" id="fileList"></div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.1rem;">
+                    <button type="button" class="btn btn-outline-primary mb-3" id="addImagesBtn">Добавить фото</button>
+                    <span class="form-text file-upload-hint file-upload-hint-italic">
+                        Можно загрузить до 10 фото. Форматы: JPG, JPEG, PNG, GIF. Размер каждого файла — не более 25 МБ.
+                    </span>
+                </div>
+                <input class="form-control" type="file" id="images" name="images" accept="image/jpeg,image/png,image/gif" multiple style="display:none;">
+                <div class="mb-4">
+                    <label for="features_text" class="form-label">Ключевые характеристики товара (через запятую)</label>
+                    <input id="features_text" name="features_text" class="form-control" placeholder="цвет: красный, размер: большой, материал: металл">
+                    <div class="form-text file-hint-readable file-hint-italic">
+                        <i>Можно ввести несколько характеристик, например: цвет: красный, размер: большой</i>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="test_case" class="form-label">Или выберите тест-кейс:</label>
+                    <select class="form-select" id="test_case" name="test_case">
+                        <option value="">-- Не выбрано --</option>
+                        {% for case in test_cases %}
+                        <option value="{{ case }}">{{ case }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Сгенерировать описание</button>
+            </form>
+            <div id="result" class="mt-4"></div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script>
+    // --- Галерея: главное фото (прямоугольник), список файлов справа ---
+    let imagesArr = [];
+    let selectedIdx = 0;
+    function renderFileList() {
+        let fileList = $('#fileList');
+        fileList.html('');
+        imagesArr.forEach((file, idx) => {
+            let sel = idx===selectedIdx ? 'selected' : '';
+            let icon = '<span class="file-icon">🖼️</span>';
+            let name = file.name || `Фото ${idx+1}`;
+            fileList.append(`
+                <div class="file-item ${sel}" data-idx="${idx}">
+                    ${icon}<span class="file-name">${name}</span>
+                    <button type="button" class="btn-remove" onclick="removeImage(${idx})" title="Удалить"><svg width="18" height="18" viewBox="0 0 20 20"><path fill="#aaa" d="M6.5 6.5l7 7m0-7l-7 7" stroke="#aaa" stroke-width="2" stroke-linecap="round"/></svg></button>
+                </div>
+            `);
+        });
+        renderMainPhoto();
+    }
+    function removeImage(idx) {
+        if(imagesArr[idx] && imagesArr[idx].preview) {
+            URL.revokeObjectURL(imagesArr[idx].preview);
+        }
+        imagesArr.splice(idx,1);
+        if(selectedIdx>=imagesArr.length) selectedIdx = Math.max(0,imagesArr.length-1);
+        renderFileList();
+    }
+    $('#addImagesBtn').on('click', function() {
+        $('#images').click();
+    });
+    $('#images').on('change', function(e) {
+        let files = Array.from(e.target.files);
+        if (imagesArr.length + files.length > 10) {
+            alert('Можно загрузить максимум 10 фото.');
+            files = files.slice(0, 10 - imagesArr.length);
+        }
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        let validFiles = [];
+        for (let f of files) {
+            if (!allowedTypes.includes(f.type)) {
+                alert('Файл ' + f.name + ' не поддерживается. Разрешены только JPG, JPEG, PNG, GIF.');
+                continue;
+            }
+            if (f.size > 25 * 1024 * 1024) {
+                alert('Файл ' + f.name + ' слишком большой. Максимальный размер — 25 МБ.');
+                continue;
+            }
+            f.preview = URL.createObjectURL(f);
+            validFiles.push(f);
+        }
+        for (let f of validFiles) imagesArr.push(f);
+        renderFileList();
+        this.value = '';
+    });
+    $('#fileList').on('click', '.file-item', function(e) {
+        selectedIdx = $(this).data('idx');
+        renderFileList();
+    });
+    function renderMainPhoto() {
+        let main = $('#mainPhoto');
+        if(imagesArr.length>0) {
+            let url = imagesArr[selectedIdx].preview;
+            main.attr('src', url).show();
+        } else {
+            main.hide();
+        }
+    }
+    // --- Tagify для признаков ---
+    var input = document.querySelector('#features_text');
+    var tagify = new Tagify(input, {
+        delimiters: ",",
+        pattern: /.+?:.+?/,
+        editTags: 1,
+        dropdown: { enabled: 0 },
+        placeholder: "цвет: красный, размер: большой"
+    });
+    $('#genForm').on('submit', function(e) {
+        e.preventDefault();
+        let formData = new FormData();
+        for(let f of imagesArr) formData.append('images', f);
+        let tags = tagify.value.map(t => t.value).join(', ');
+        formData.set('features_text', tags);
+        formData.set('test_case', $('#test_case').val());
+        $('#result').html('<div class="alert alert-info">Генерация...</div>');
+        const $btn = $(this).find('button[type="submit"]');
+        const origText = $btn.text();
+        $btn.prop('disabled', true).text('Генерация...');
+        $.ajax({
+            url: '/generate',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                if (data.error) {
+                    $('#result').html('<div class="alert alert-danger">'+data.error+'</div>');
+                } else {
+                    let html = '';
+                    html += '<div class="alert alert-success" style="font-size:1.13rem; font-weight:500; margin-bottom:1.2rem; background:linear-gradient(90deg,#e0e7ef 0%,#bfc4cc 100%); color:#232b3a; border-radius:14px; box-shadow:0 2px 12px 0 #bfc4cc55; border:2px solid #bfc4cc; padding:1.2rem 1.5rem;">';
+                    html += '<span style="display:inline-block; font-size:1.18rem; font-weight:900; color:#2b3a4a; letter-spacing:0.02em; margin-bottom:0.5em; text-shadow:0 2px 8px #fff8; background:linear-gradient(90deg,#bfc4cc 0%,#e0e7ef 100%); border-radius:8px; padding:0.18em 0.7em 0.18em 0.5em; box-decoration-break:clone;">Ваше объявление:</span><br>';
+                    html += (data.result && data.result.generated_text) ? data.result.generated_text : (data.result && data.result.generated_texts ? data.result.generated_texts[0] : data.result);
+                    html += '</div>';
+                    html += `<div style="color:#b2b8c6; font-size:0.98rem; margin-top:0.5rem;">Время генерации: <b>${data.elapsed} сек</b></div>`;
+                    $('#result').html(html);
+                }
+                $btn.prop('disabled', false).text(origText);
+            },
+            error: function(xhr) {
+                $('#result').html('<div class="alert alert-danger">Ошибка: '+xhr.responseText+'</div>');
+                $btn.prop('disabled', false).text(origText);
+            }
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+1. Очистка кеша от моделей 
+
+bash notes/clear_hf_cache.sh
+
+2. Получить структуру проекта 
+
+bash notes/show_sizes.sh

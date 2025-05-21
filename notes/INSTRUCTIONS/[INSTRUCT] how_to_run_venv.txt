@@ -1,0 +1,26 @@
+1. Активирован ли на данный момент виртуальный env?
+
+echo $VIRTUAL_ENV
+
+- должна быть папка с вашим venv, по верному пути
+
+
+2. Активировать виртуальное окружение:
+
+python3 -m venv venv
+source venv/bin/activate
+
+
+3. Деактивируйте окружение: 
+
+deactivate
+
+
+4. Перезапустите терминал. Удалите старое окружение и создайте новое:
+
+rm -rf venv
+python3 -m venv venv
+source venv/bin/activate
+
+
+pip install -r requirements.txt --no-deps
