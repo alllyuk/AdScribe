@@ -6,7 +6,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import Optional, List
 from huggingface_hub import snapshot_download
-from model_utils import predict_caption_single_image, predict_multimodal, parse_features
+from app.model_utils import (
+    predict_caption_single_image,
+    predict_multimodal,
+    parse_features,
+)
+from loguru import logger
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
@@ -26,12 +32,15 @@ def index(request: Request):
     if not os.path.exists(LOCAL_MODEL_DIR):
         os.makedirs(LOCAL_MODEL_DIR, exist_ok=True)
         snapshot_download(repo_id=MODEL_NAME, local_dir=LOCAL_MODEL_DIR)
+        logger.debug(f"Donwloaded model snapshot to {LOCAL_MODEL_DIR}")
 
     test_cases = []
     if os.path.exists(TEST_CASES_DIR):
         for d in os.listdir(TEST_CASES_DIR):
             if os.path.isdir(os.path.join(TEST_CASES_DIR, d)):
                 test_cases.append(d)
+        logger.debug(f"Initialized test cases from {TEST_CASES_DIR}")
+
     return templates.TemplateResponse(
         "index.html", {"request": request, "test_cases": test_cases}
     )
@@ -53,6 +62,7 @@ async def generate(
         image_datas = []
         parsed_features = None
         if test_case:
+            logger.debug("Generate from test case")
             case_path = os.path.join(TEST_CASES_DIR, test_case)
             for fname in os.listdir(case_path):
                 if fname.lower().endswith((".jpg", ".jpeg", ".png")):
@@ -64,6 +74,7 @@ async def generate(
                     ) as f:
                         parsed_features = f.read()
         else:
+            logger.debug("Generate from user input")
             if images:
                 for img in images:
                     image_datas.append(await img.read())
@@ -72,9 +83,15 @@ async def generate(
             if features_text and features_text.strip():
                 parsed_features = features_text.strip()
         if not image_datas:
+            logger.debug("Nothing uploaded")
             raise Exception("Нужно загрузить хотя бы одну картинку!")
+
+        logger.debug("Data uploaded, start generation")
+
         # Только картинка -> текст (одна картинка — один текст)
         preds = [predict_caption_single_image(img) for img in image_datas]
+        logger.debug("Predictions ready")
+
         # Заглушка: если будут признаки — использовать predict_multimodal
         # preds = [predict_multimodal(img, parsed_features) for img in image_datas]
         metrics["len_chars"] = [len(t) for t in preds]

@@ -1,0 +1,57 @@
+колонка attr:
+
+`Размер` -> `[SHOES_SIZE]`
+`Размер. Одежда` -> `[CLOTHES_SIZE]`
+
+колонка title:
+
+`Размер одежды, буквенный` -> `[CLOTHES_SIZE_LETTERS]`
+`Размер одежды, численный` -> `[CLOTHES_SIZE_NUMBERS]`
+`Размер обуви` -> `[SHOES_SIZE]`
+`Рост` -> `[HEIGHT]`
+`Измерения` -> `[MEASUREMENTS]`
+`Сайт` -> `[WEBSITE]`
+`Возраст` -> `[AGE]`
+`Дата` -> `[DATE]`
+`Адрес` -> `[ADDRESS]`
+
+колонка description:
+
+`Размер одежды, численный` -> `[CLOTHES_SIZE_NUMBERS]`
+`Размер одежды, буквенный` -> `[CLOTHES_SIZE_LETTERS]`
+`Размер обуви` -> `[SHOES_SIZE]`
+`Рост` -> `[HEIGHT]`
+`Измерения` -> `[MEASUREMENTS]`
+`Цена` -> `[PRICE]`
+`Сайт` -> `[WEBSITE]`
+`Возраст` -> `[AGE]`
+`Дата` -> `[DATE]`
+`Адрес` -> `[ADDRESS]`
+
+колонка other:
+
+`Размер одежды, численный` -> `[CLOTHES_SIZE_NUMBERS]`
+`Размер одежды, буквенный` -> `[CLOTHES_SIZE_LETTERS]`
+`Размер обуви` -> `[SHOES_SIZE]`
+`Рост` -> `[HEIGHT]`
+`Измерения` -> `[MEASUREMENTS]`
+`Цена` -> `[PRICE]`
+`Сайт` -> `[WEBSITE]`
+`Возраст` -> `[AGE]`
+`Дата` -> `[DATE]`
+
+
+Финальный список масок:
+
+[UNK] - нераспознанный токен
+[SHOES_SIZE] - размер обуви
+[CLOTHES_SIZE] - размер одежды
+[CLOTHES_SIZE_LETTERS] - размер одежды буквенный
+[CLOTHES_SIZE_NUMBERS] - размер одежды численный
+[HEIGHT] - рост
+[MEASUREMENTS] - измерения
+[WEBSITE] - сайт
+[AGE] - возраст
+[DATE] - дата
+[ADDRESS] - адрес
+[PRICE] - цена

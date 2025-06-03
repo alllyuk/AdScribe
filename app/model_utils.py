@@ -24,9 +24,17 @@ feature_extractor = ViTImageProcessor.from_pretrained(LOCAL_MODEL_DIR)
 tokenizer = AutoTokenizer.from_pretrained(LOCAL_MODEL_DIR)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-max_length = 16
-num_beams = 4
-gen_kwargs = {"max_length": max_length, "num_beams": num_beams}
+# max_length = 16
+# num_beams = 4
+# gen_kwargs = {"max_length": max_length, "num_beams": num_beams}
+# REPLACE IT TO MAKE MODEL WORKS WITHOUT BEAN SEARCH
+gen_kwargs = {
+    "max_length": 64,
+    "do_sample": True,
+    "top_k": 50,
+    "top_p": 0.9,
+    "temperature": 1.0,
+}
 
 
 def predict_caption_single_image(image_bytes):
