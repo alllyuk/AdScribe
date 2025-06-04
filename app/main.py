@@ -31,7 +31,7 @@ from app.model_utils import get_caption_model
 MODEL_TYPE = os.environ.get("CAPTION_MODEL", "vit-rugpt2")  # или "blip2-llm"
 caption_model = get_caption_model(MODEL_TYPE)
 
-# Заменить на
+# в generate: заменить на
 # preds = [caption_model.predict(img, parsed_features) for img in image_datas]
 
 
