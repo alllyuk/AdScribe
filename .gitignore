@@ -178,3 +178,4 @@ data
 app/model_snapshot
 make_whisper_better
 notes/vsix_extensions
+experimental/validation_images

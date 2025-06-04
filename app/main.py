@@ -25,6 +25,15 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
+from app.model_utils import get_caption_model
+
+# Укажи модель (можно сделать через конфиг/env)
+MODEL_TYPE = os.environ.get("CAPTION_MODEL", "vit-rugpt2")  # или "blip2-llm"
+caption_model = get_caption_model(MODEL_TYPE)
+
+# Заменить на
+# preds = [caption_model.predict(img, parsed_features) for img in image_datas]
+
 
 # Скачиваем snapshot модели в локальную папку (один раз, затем используем локально)
 @app.get("/", response_class=HTMLResponse)
