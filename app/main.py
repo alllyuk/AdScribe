@@ -7,9 +7,8 @@ from fastapi.templating import Jinja2Templates
 from typing import Optional, List
 from huggingface_hub import snapshot_download
 from app.model_utils import (
-    predict_caption_single_image,
-    predict_multimodal,
-    parse_features,
+    get_caption_model,
+    load_config,
 )
 from loguru import logger
 
@@ -18,31 +17,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 TEST_CASES_DIR = os.path.join(BASE_DIR, "test_cases")
-MODEL_NAME = "tuman/vit-rugpt2-image-captioning"
-LOCAL_MODEL_DIR = os.path.join(BASE_DIR, "model_snapshot")
+# MODEL_NAME = "tuman/vit-rugpt2-image-captioning"
+# LOCAL_MODEL_DIR = os.path.join(BASE_DIR, "model_snapshot")
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
-from app.model_utils import get_caption_model
 
-# Укажи модель (можно сделать через конфиг/env)
-MODEL_TYPE = os.environ.get("CAPTION_MODEL", "vit-rugpt2")  # или "blip2-llm"
-caption_model = get_caption_model(MODEL_TYPE)
-
-# в generate: заменить на
-# preds = [caption_model.predict(img, parsed_features) for img in image_datas]
+# Загрузка и инициализация модели по конфигу
+config = load_config()
+caption_model = get_caption_model(config)
 
 
-# Скачиваем snapshot модели в локальную папку (один раз, затем используем локально)
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    if not os.path.exists(LOCAL_MODEL_DIR):
-        os.makedirs(LOCAL_MODEL_DIR, exist_ok=True)
-        snapshot_download(repo_id=MODEL_NAME, local_dir=LOCAL_MODEL_DIR)
-        logger.debug(f"Donwloaded model snapshot to {LOCAL_MODEL_DIR}")
-
     test_cases = []
     if os.path.exists(TEST_CASES_DIR):
         for d in os.listdir(TEST_CASES_DIR):
@@ -97,12 +86,10 @@ async def generate(
 
         logger.debug("Data uploaded, start generation")
 
-        # Только картинка -> текст (одна картинка — один текст)
-        preds = [predict_caption_single_image(img) for img in image_datas]
+        preds = [caption_model.predict(img, parsed_features) for img in image_datas]
+
         logger.debug("Predictions ready")
 
-        # Заглушка: если будут признаки — использовать predict_multimodal
-        # preds = [predict_multimodal(img, parsed_features) for img in image_datas]
         metrics["len_chars"] = [len(t) for t in preds]
         metrics["len_words"] = [len(t.split()) for t in preds]
         result = {"generated_texts": preds}
