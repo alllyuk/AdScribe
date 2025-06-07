@@ -76,19 +76,19 @@ async def generate(
             if images:
                 for img in images:
                     image_datas.append(await img.read())
-            if features:
-                parsed_features = (await features.read()).decode("utf-8")
-            if features_text and features_text.strip():
+            # if features:
+            #     parsed_features = (await features.read()).decode("utf-8")
+            if features_text.strip():
                 parsed_features = features_text.strip()
         if not image_datas:
-            logger.debug("Nothing uploaded")
+            logger.debug("No one images uploaded")
             raise Exception("Нужно загрузить хотя бы одну картинку!")
 
         logger.debug("Data uploaded, start generation")
 
         preds = [caption_model.predict(img, parsed_features) for img in image_datas]
 
-        logger.debug("Predictions ready")
+        logger.debug("Predictions from caption_model ready")
 
         metrics["len_chars"] = [len(t) for t in preds]
         metrics["len_words"] = [len(t.split()) for t in preds]

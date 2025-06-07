@@ -175,7 +175,7 @@ cython_debug/
 
 # Specific projects folders
 data
-app/model_snapshot
+app/model_snapshots/
 make_whisper_better
 notes/vsix_extensions
 experimental/validation_images

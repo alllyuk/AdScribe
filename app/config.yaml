@@ -1,9 +1,9 @@
 model:
-  type: "blip2_llm"  # "blip2_llm", "vit_rugpt2"
+  type: "vit_rugpt2"  # "blip2_llm", "vit_rugpt2"
 
   # Настройки для ViT-RuGPT2
   vit_rugpt2:
-    model_dir: "model_snapshot"
+    model_dir: "app/model_snapshots/vit_rugpt2"
     model_name: "tuman/vit-rugpt2-image-captioning"
 
   # Настройки для BLIP-2 + LLM
