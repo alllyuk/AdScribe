@@ -158,6 +158,17 @@
                     html += '<div class="alert alert-success" style="font-size:1.13rem; font-weight:500; margin-bottom:1.2rem; background:linear-gradient(90deg,#e0e7ef 0%,#bfc4cc 100%); color:#232b3a; border-radius:14px; box-shadow:0 2px 12px 0 #bfc4cc55; border:2px solid #bfc4cc; padding:1.2rem 1.5rem;">';
                     html += '<span style="display:inline-block; font-size:1.18rem; font-weight:900; color:#2b3a4a; letter-spacing:0.02em; margin-bottom:0.5em; text-shadow:0 2px 8px #fff8; background:linear-gradient(90deg,#bfc4cc 0%,#e0e7ef 100%); border-radius:8px; padding:0.18em 0.7em 0.18em 0.5em; box-decoration-break:clone;">Ваше объявление:</span><br>';
                     html += (data.result && data.result.generated_text) ? data.result.generated_text : (data.result && data.result.generated_texts ? data.result.generated_texts[0] : data.result);
+                    // if (data.result && data.result.generated_texts) {
+                    //     html += '<ul>';
+                    //     data.result.generated_texts.forEach((desc, idx) => {
+                    //         html += `<li><strong>Фото ${idx + 1}:</strong> ${desc}</li>`;
+                    //     });
+                    //     html += '</ul>';
+                    // } else if (data.result && data.result.generated_text) {
+                    //     html += data.result.generated_text;
+                    // } else {
+                    //     html += data.result;
+                    // }
                     html += '</div>';
                     html += `<div style="color:#b2b8c6; font-size:0.98rem; margin-top:0.5rem;">Время генерации: <b>${data.elapsed} сек</b></div>`;
                     $('#result').html(html);
