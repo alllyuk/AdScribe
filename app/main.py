@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import Optional, List
 from huggingface_hub import snapshot_download
-from app.model_utils import (
+from model.model_utils import (
     get_caption_model,
     load_config,
 )
@@ -56,45 +56,43 @@ async def generate(
     error = None
     result = None
     metrics = {}
-    try:
-        image_datas = []
-        parsed_features = None
-        if test_case:
-            logger.debug("Generate from test case")
-            case_path = os.path.join(TEST_CASES_DIR, test_case)
-            for fname in os.listdir(case_path):
-                if fname.lower().endswith((".jpg", ".jpeg", ".png")):
-                    with open(os.path.join(case_path, fname), "rb") as f:
-                        image_datas.append(f.read())
-                elif fname.lower().endswith(".txt"):
-                    with open(
-                        os.path.join(case_path, fname), "r", encoding="utf-8"
-                    ) as f:
-                        parsed_features = f.read()
-        else:
-            logger.debug("Generate from user input")
-            if images:
-                for img in images:
-                    image_datas.append(await img.read())
-            # if features:
-            #     parsed_features = (await features.read()).decode("utf-8")
-            if features_text.strip():
-                parsed_features = features_text.strip()
-        if not image_datas:
-            logger.debug("No one images uploaded")
-            raise Exception("Нужно загрузить хотя бы одну картинку!")
+    # try:
+    image_datas = []
+    parsed_features = None
+    if test_case:
+        logger.debug("Generate from test case")
+        case_path = os.path.join(TEST_CASES_DIR, test_case)
+        for fname in os.listdir(case_path):
+            if fname.lower().endswith((".jpg", ".jpeg", ".png")):
+                with open(os.path.join(case_path, fname), "rb") as f:
+                    image_datas.append(f.read())
+            elif fname.lower().endswith(".txt"):
+                with open(os.path.join(case_path, fname), "r", encoding="utf-8") as f:
+                    parsed_features = f.read()
+    else:
+        logger.debug("Generate from user input")
+        if images:
+            for img in images:
+                image_datas.append(await img.read())
+        # if features:
+        #     parsed_features = (await features.read()).decode("utf-8")
+        if features_text.strip():
+            parsed_features = features_text.strip()
+    if not image_datas:
+        logger.debug("No one images uploaded")
+        raise Exception("Нужно загрузить хотя бы одну картинку!")
 
-        logger.debug("Data uploaded, start generation")
+    logger.debug("Data uploaded, start generation")
 
-        preds = [caption_model.predict(img, parsed_features) for img in image_datas]
+    preds = [caption_model.predict(img, parsed_features) for img in image_datas]
 
-        logger.debug("Predictions from caption_model ready")
+    logger.debug("Predictions from caption_model ready")
 
-        metrics["len_chars"] = [len(t) for t in preds]
-        metrics["len_words"] = [len(t.split()) for t in preds]
-        result = {"generated_texts": preds}
-    except Exception as e:
-        error = str(e)
+    metrics["len_chars"] = [len(t) for t in preds]
+    metrics["len_words"] = [len(t.split()) for t in preds]
+    result = {"generated_texts": preds}
+    # except Exception as e:
+    #     error = str(e)
     elapsed = round(time.time() - start_time, 2)
     return JSONResponse(
         {"result": result, "error": error, "metrics": metrics, "elapsed": elapsed}

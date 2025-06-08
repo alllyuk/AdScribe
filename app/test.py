@@ -15,7 +15,7 @@ try:
         local_dir=LOCAL_MODEL_DIR,
         local_dir_use_symlinks=False,
         force_download=True,
-        resume_download=False
+        resume_download=False,
     )
     print(f"Downloaded to: {path}")
 except Exception as e:
