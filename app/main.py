@@ -86,7 +86,7 @@ async def generate(
 
     preds = [caption_model.predict(img, parsed_features) for img in image_datas]
 
-    logger.debug("Predictions from caption_model ready")
+    logger.debug("Descriptions are ready")
 
     metrics["len_chars"] = [len(t) for t in preds]
     metrics["len_words"] = [len(t.split()) for t in preds]
