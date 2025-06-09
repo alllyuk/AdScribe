@@ -1,18 +1,15 @@
 model:
-  type: "blip2_llm"  # "blip2_llm", "vit_rugpt2", "qwen_unsloth"
+  type: "qwen_vision"  # "blip2_llm", "vit_rugpt2", "qwen_vision"
 
   # Настройки для ViT-RuGPT2
   vit_rugpt2:
-    model_dir: "model/model_snapshots/vit_rugpt2"
     model_name: "tuman/vit-rugpt2-image-captioning"
 
   # Настройки для BLIP-2 + LLM
   blip2_llm:
-    model_dir: model/model_snapshots/blip2_llm
     blip_model_id: "Salesforce/blip-image-captioning-base"
     llm_model_id: "Vikhrmodels/Vikhr-Nemo-12B-Instruct-R-21-09-24"
     lora_path: null  # путь к адаптеру, если используется
 
-  qwen_unsloth:
-    model_dir: model/model_snapshots/qwen_unsloth
-    model_name: moxeeeem/aaa_proj
+  qwen_vision:
+    base_model_name: unsloth/Qwen2.5-VL-7B-Instruct

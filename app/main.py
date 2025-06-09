@@ -1,4 +1,3 @@
-# pip install -q fastapi uvicorn huggingface_hub loguru
 import os
 import time
 from fastapi import FastAPI, Request, UploadFile, File, Form
