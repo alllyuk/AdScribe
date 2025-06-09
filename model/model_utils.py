@@ -1,3 +1,4 @@
+# from unsloth import FastVisionModel
 from abc import ABC, abstractmethod
 from transformers import (
     VisionEncoderDecoderModel,
@@ -9,6 +10,7 @@ from transformers import (
     AutoProcessor,
     AutoModelForImageTextToText,
     AutoModelForSeq2SeqLM,
+    TextStreamer,
 )
 import torch
 from PIL import Image
@@ -156,6 +158,48 @@ class BLIP2LLMModel(BaseCaptionModel):
             generated_tokens, skip_special_tokens=True
         ).strip()
         return result
+
+
+# class UnslothVisionCaptionModel(BaseCaptionModel):
+#     def __init__(self, model_dir, model_name):
+#         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+#         # Load model and tokenizer
+#         self.model, self.tokenizer = FastVisionModel.from_pretrained(
+#             model_dir,
+#             load_in_4bit=True,
+#         )
+#         FastVisionModel.for_inference(self.model)
+#         self.streamer = TextStreamer(self.tokenizer, skip_prompt=True)
+
+#     def predict(self, image_bytes: bytes, features: str = None) -> str:
+#         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+#         # Prepare input content for chat template
+#         content = [{"type": "image", "image": image}]
+#         if features:
+#             content.append({"type": "text", "text": features})
+
+#         messages = [{"role": "user", "content": content}]
+#         input_text = self.tokenizer.apply_chat_template(
+#             messages, add_generation_prompt=True
+#         )
+
+#         inputs = self.tokenizer(
+#             [image],
+#             input_text,
+#             add_special_tokens=False,
+#             return_tensors="pt",
+#         ).to(self.device)
+
+#         with torch.no_grad():
+#             generated_ids = self.model.generate(
+#                 **inputs, max_new_tokens=128, temperature=1.5, min_p=0.1, use_cache=True
+#             )
+#         output_text = self.tokenizer.decode(
+#             generated_ids[0], skip_special_tokens=True
+#         ).strip()
+#         return output_text
 
 
 def get_caption_model(config: dict):

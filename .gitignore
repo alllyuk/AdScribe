@@ -179,3 +179,5 @@ model/model_snapshots/
 make_whisper_better
 notes/vsix_extensions
 experimental/validation_images
+qwen_usage
+unsloth_compiled_cache
