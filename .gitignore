@@ -180,4 +180,7 @@ make_whisper_better
 notes/vsix_extensions
 experimental/validation_images
 unsloth_compiled_cache
-qwen_usage
+qwen_usage/aaa_proj
+qwen_usage/use_cases
+qwen_usage/trash
+qwen_usage/inference_one_test_case.py
