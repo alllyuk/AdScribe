@@ -57,7 +57,7 @@ class QwenVisionModel(BaseCaptionModel):
         self,
         base_model_name="unsloth/Qwen2.5-VL-7B-Instruct",
         lora_adapter_name="moxeeeem/aaa_proj2",
-        classifier_model_path="/workspace/AAA_project/qwen_usage/model.pt",
+        classifier_model_path="./qwen_usage/model.pt",
         load_in_4bit=True,
     ):
         """

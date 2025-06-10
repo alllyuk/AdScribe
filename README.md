@@ -11,22 +11,20 @@
 
 # Инструкция по запуску
 
-1.1. Установите зависимости:
-
+1. Клонируйте репозиторий и перейдите в директорию проекта:
 ```bash
-pip install requirements.txt
+git clone https://github.com/alllyuk/AdScribe.git
+cd AdScribe
 ```
 
-1.2. Добавьте файл `.env` с указанием вашего токена HuggingFace: `HF_TOKEN=your_hf_token`
-
-2. Запустите сервер с автообновлением:
-
+2. Соберите Docker-образ:
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+docker build -t adscribe .
 ```
 
-3. Откройте в браузере: http://localhost:8000
+3. Запустите контейнер:
+```bash
+docker run -p 8000:8000 adscribe
+```
 
-4. Для добавления тест-кейсов создайте папки внутри `test_cases`, положите туда картинку (image.jpg / .png) и файл признаков (desc.txt).
-
-Также в настоящее время сервис доступен по публичной ссылке: http://188.241.30.201:41793/
+4. Откройте в браузере: http://localhost:8000
